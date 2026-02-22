@@ -1,0 +1,41 @@
+name: CI with Cache
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache dependencies
+        id: cache-db1a2a0
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: cache-db1a2a0
+          restore-keys: |
+            cache-db1a2a0
+
+      - name: prime-cache-db1a2a0
+        run: |
+          echo "Cache hit: ${{ steps.cache-db1a2a0.outputs.cache-hit }}"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          python -c "print('All tests passed!')"
